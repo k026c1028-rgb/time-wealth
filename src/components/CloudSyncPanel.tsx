@@ -99,7 +99,7 @@ export function CloudSyncPanel() {
   }, [snapshotKey, isPro, sessionEmail])
 
   return (
-    <div className="mt-4 rounded-2xl border border-zinc-200/70 bg-white/60 p-4 dark:border-zinc-800/70 dark:bg-zinc-950/30">
+    <section className="card">
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-sm font-semibold">{t('cloud.title')}</div>
@@ -246,6 +246,6 @@ export function CloudSyncPanel() {
           </div>
         )}
       </div>
-    </div>
+    </section>
   )
 }

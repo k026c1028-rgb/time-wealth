@@ -8,7 +8,6 @@ import { useAppStore } from '../store/useAppStore'
 import { LanguageSwitcher } from './LanguageSwitcher'
 import { openWidget } from '../widget/openWidget'
 import { SharePosterButton } from './SharePoster'
-import { CloudSyncPanel } from './CloudSyncPanel'
 import type { CurrencyCode } from '../types'
 
 const currencyOptions: CurrencyCode[] = [
@@ -366,7 +365,6 @@ export function TimerPanel() {
             </div>
           </div>
 
-          <CloudSyncPanel />
         </div>
       </div>
     </section>
