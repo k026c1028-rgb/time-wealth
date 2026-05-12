@@ -13,6 +13,7 @@ export function CloudSyncPanel() {
   const { t } = useTranslation()
   const isPro = useAppStore((s) => s.entitlements.isPro)
   const openProModal = useAppStore((s) => s.openProModal)
+  const setEntitlements = useAppStore((s) => s.setEntitlements)
   const settings = useAppStore((s) => s.settings)
   const goals = useAppStore((s) => s.goals)
   const savingsGoals = useAppStore((s) => s.savingsGoals)
@@ -39,11 +40,33 @@ export function CloudSyncPanel() {
 
   useEffect(() => {
     if (!supabaseEnabled || !supabase) return
-    supabase.auth.getSession().then(({ data }) => {
-      setSessionEmail(data.session?.user?.email ?? null)
-    })
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+    const sb = supabase
+    const refreshEntitlements = async (session: any | null) => {
+      try {
+        if (!session) return setEntitlements({ isPro: false, plan: null })
+        const { data, error } = await sb
+          .from('tw_entitlements')
+          .select('is_pro,plan,current_period_end')
+          .eq('user_id', session.user.id)
+          .maybeSingle()
+        if (error) throw error
+        setEntitlements({
+          isPro: Boolean(data?.is_pro),
+          plan: (data?.plan as any) ?? null,
+        })
+      } catch {
+        // If the table isn't created yet or RLS blocks, keep existing state.
+      }
+    }
+
+    sb.auth.getSession().then(({ data }) => {
+      const session = data.session
       setSessionEmail(session?.user?.email ?? null)
+      refreshEntitlements(session)
+    })
+    const { data: sub } = sb.auth.onAuthStateChange((_event, session) => {
+      setSessionEmail(session?.user?.email ?? null)
+      refreshEntitlements(session)
     })
     return () => {
       sub.subscription.unsubscribe()
@@ -95,7 +118,7 @@ export function CloudSyncPanel() {
         </div>
       )}
 
-      <div className={isPro ? 'mt-3 space-y-3' : 'mt-3 space-y-3 opacity-50'}>
+      <div className="mt-3 space-y-3">
         <div className="rounded-xl border border-zinc-200/60 bg-white/60 p-3 dark:border-zinc-800/60 dark:bg-zinc-950/20">
           <div className="text-xs text-zinc-500 dark:text-zinc-400">{t('cloud.account')}</div>
           <div className="mt-1 text-sm font-medium">
@@ -109,14 +132,14 @@ export function CloudSyncPanel() {
                 placeholder={t('cloud.emailPlaceholder')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                disabled={!isPro || !supabaseEnabled}
+                // Allow typing even if not Pro; Pro gate happens on button click.
+                disabled={!supabaseEnabled || busy}
               />
               <button
                 className="btn btn-primary"
                 type="button"
-                disabled={!isPro || !supabaseEnabled || busy || cooldownLeft > 0 || !email.trim()}
+                disabled={!supabaseEnabled || busy || cooldownLeft > 0 || !email.trim()}
                 onClick={async () => {
-                  if (!isPro) return openProModal('pro_cloud')
                   if (!supabaseEnabled || !supabase) return
                   if (cooldownLeft > 0) return
                   try {
@@ -145,7 +168,7 @@ export function CloudSyncPanel() {
               <button
                 className="btn"
                 type="button"
-                disabled={!isPro || !supabaseEnabled || busy}
+                disabled={!supabaseEnabled || busy}
                 onClick={async () => {
                   if (!supabaseEnabled || !supabase) return
                   setBusy(true)
@@ -171,7 +194,7 @@ export function CloudSyncPanel() {
           <button
             className="btn"
             type="button"
-            disabled={!isPro || !supabaseEnabled || !sessionEmail || busy}
+            disabled={!supabaseEnabled || !sessionEmail || busy}
             onClick={async () => {
               if (!isPro) return openProModal('pro_cloud')
               setBusy(true)
@@ -193,7 +216,7 @@ export function CloudSyncPanel() {
           <button
             className="btn"
             type="button"
-            disabled={!isPro || !supabaseEnabled || !sessionEmail || busy}
+            disabled={!supabaseEnabled || !sessionEmail || busy}
             onClick={async () => {
               if (!isPro) return openProModal('pro_cloud')
               setBusy(true)

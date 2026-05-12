@@ -31,6 +31,7 @@ type AppActions = {
   closeProModal: () => void
   subscribeProMock: () => void
   cancelProMock: () => void
+  setEntitlements: (patch: Partial<Entitlements>) => void
 
   setWageRules: (patch: Partial<WageRules>) => void
 }
@@ -182,6 +183,11 @@ export const useAppStore = create<AppState & AppActions>()(
       cancelProMock: () =>
         set(() => ({
           entitlements: { isPro: false, plan: null, startedAtMs: null },
+        })),
+
+      setEntitlements: (patch) =>
+        set((s) => ({
+          entitlements: { ...s.entitlements, ...patch },
         })),
 
       setWageRules: (patch) => set((s) => ({ wageRules: { ...s.wageRules, ...patch } })),

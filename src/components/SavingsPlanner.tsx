@@ -15,6 +15,7 @@ export function SavingsPlanner() {
   const { t } = useTranslation()
   const currency = useAppStore((s) => s.settings.currency)
   const goals = useAppStore((s) => s.savingsGoals)
+  const isPro = useAppStore((s) => s.entitlements.isPro)
   const add = useAppStore((s) => s.addSavingsGoal)
   const update = useAppStore((s) => s.updateSavingsGoal)
   const remove = useAppStore((s) => s.removeSavingsGoal)
@@ -23,6 +24,7 @@ export function SavingsPlanner() {
   const [name, setName] = useState('')
   const [targetAmount, setTargetAmount] = useState<number>(0)
   const [savedAmount, setSavedAmount] = useState<number>(0)
+  const [formError, setFormError] = useState<string | null>(null)
   const [targetDate, setTargetDate] = useState(() => {
     const d = new Date()
     d.setMonth(d.getMonth() + 3)
@@ -34,6 +36,7 @@ export function SavingsPlanner() {
     setName('')
     setTargetAmount(0)
     setSavedAmount(0)
+    setFormError(null)
     const d = new Date()
     d.setMonth(d.getMonth() + 3)
     setTargetDate(d.toISOString().slice(0, 10))
@@ -41,10 +44,11 @@ export function SavingsPlanner() {
   }
 
   function submit() {
+    setFormError(null)
     const cleanName = name.trim()
-    if (!cleanName) return
-    if (!Number.isFinite(targetAmount) || targetAmount <= 0) return
-    if (!targetDate) return
+    if (!cleanName) return setFormError(t('savings.errorNameRequired'))
+    if (!Number.isFinite(targetAmount) || targetAmount <= 0) return setFormError(t('savings.errorTargetAmount'))
+    if (!targetDate) return setFormError(t('savings.errorTargetDate'))
 
     const ok = add({
       name: cleanName,
@@ -54,7 +58,7 @@ export function SavingsPlanner() {
       targetDate,
       cadence,
     })
-    if (!ok) return
+    if (!ok) return setFormError(t('pro.reasonSavingsLimit', { n: 3 }))
     resetForm()
     setOpen(false)
   }
@@ -65,6 +69,11 @@ export function SavingsPlanner() {
         <div>
           <h2 className="text-lg font-semibold tracking-tight">{t('savings.title')}</h2>
           <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">{t('savings.subtitle')}</p>
+          {!isPro && (
+            <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+              {t('savings.limitNote', { used: goals.length, n: 3 })}
+            </p>
+          )}
         </div>
         {!open ? (
           <button className="btn btn-primary" type="button" onClick={() => setOpen(true)}>
@@ -124,6 +133,11 @@ export function SavingsPlanner() {
                 {t('common.save')}
               </button>
             </div>
+            {formError && (
+              <div className="md:col-span-4 text-xs text-rose-600 dark:text-rose-300">
+                {formError}
+              </div>
+            )}
           </div>
         </div>
       )}

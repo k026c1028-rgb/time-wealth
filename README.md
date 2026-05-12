@@ -76,6 +76,43 @@ http://localhost:5173/?widget=1
 - 点击右上角「升级Pro」可模拟开通 Pro（¥490/月）
 - Pro 解锁：无限目标/存钱目标、高级桌面小组件、一键自动翻译、导出备份（JSON）
 
+## Stripe 真订阅（快速变现）
+
+项目内置了 Vercel Functions（`/api`）用于 Stripe Checkout 订阅（**月付 / 年付 + 7 天试用**），并通过 webhook 把 Pro 权益写入 Supabase 表 `tw_entitlements`（前端按 `is_pro` 解锁）。
+
+### 1) Supabase 建表（Pro 权益）
+
+在 Supabase SQL Editor 运行：
+
+```sql
+create table if not exists public.tw_entitlements (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  is_pro boolean not null default false,
+  plan text,
+  stripe_customer_id text,
+  stripe_subscription_id text,
+  current_period_end timestamptz
+);
+
+alter table public.tw_entitlements enable row level security;
+
+create policy "tw_entitlements read own" on public.tw_entitlements
+for select to authenticated
+using (auth.uid() = user_id);
+```
+
+### 2) Vercel 环境变量（必须）
+
+在 Vercel 项目 Settings → Environment Variables（Production + Preview）添加：
+
+- `STRIPE_SECRET_KEY`（Stripe 的 secret key，测试环境通常 `sk_test_...`）
+- `STRIPE_PRICE_MONTHLY`（月付 price id：`price_...`）
+- `STRIPE_PRICE_YEARLY`（年付 price id：`price_...`）
+- `STRIPE_WEBHOOK_SECRET`（webhook secret：`whsec_...`）
+- `SUPABASE_SERVICE_ROLE_KEY`（Supabase 的 service_role key，仅服务端使用）
+
+（前端仍然需要 `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`）
+
 ## Supabase 云同步（Pro）
 
 本项目已接入 **Supabase（邮箱魔法链接登录）**，用于手机/电脑同步与云备份。

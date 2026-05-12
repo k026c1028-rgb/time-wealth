@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { useAppStore } from '../store/useAppStore'
 import { exportExcel } from '../lib/exportExcel'
+import { supabase, supabaseEnabled } from '../lib/supabaseClient'
 
 function downloadJson(filename: string, data: unknown) {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' })
@@ -22,10 +23,34 @@ export function ProPaywall() {
   const reason = useAppStore((s) => s.ui.proModalReason)
   const isPro = useAppStore((s) => s.entitlements.isPro)
   const close = useAppStore((s) => s.closeProModal)
-  const subscribe = useAppStore((s) => s.subscribeProMock)
-  const cancel = useAppStore((s) => s.cancelProMock)
+  // Real cancel/portal will be added later.
 
   const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  async function startCheckout(plan: 'monthly' | 'yearly') {
+    try {
+      setError(null)
+      setBusy(true)
+      if (!supabaseEnabled || !supabase) throw new Error(t('cloud.notConfigured'))
+      const { data } = await supabase.auth.getSession()
+      const session = data.session
+      if (!session?.user?.id || !session.user.email) throw new Error(t('pro.signInToSubscribe'))
+
+      const r = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan, userId: session.user.id, email: session.user.email }),
+      })
+      const j = await r.json()
+      if (!r.ok) throw new Error(j?.error || 'checkout failed')
+      if (!j?.url) throw new Error('missing checkout url')
+      window.location.href = j.url
+    } catch (e: any) {
+      setError(String(e?.message || e))
+      setBusy(false)
+    }
+  }
 
   const reasonText = useMemo(() => {
     switch (reason) {
@@ -81,26 +106,17 @@ export function ProPaywall() {
 
         <div className="mt-5 flex flex-wrap items-center gap-2">
           {!isPro ? (
-            <button
-              className="btn btn-primary"
-              type="button"
-              disabled={busy}
-              onClick={() => {
-                setBusy(true)
-                try {
-                  subscribe()
-                } finally {
-                  setBusy(false)
-                }
-              }}
-            >
-              {t('pro.subscribe')}
-            </button>
+            <>
+              <button className="btn btn-primary" type="button" disabled={busy} onClick={() => startCheckout('monthly')}>
+                {t('pro.subscribeMonthly')}
+              </button>
+              <button className="btn btn-primary" type="button" disabled={busy} onClick={() => startCheckout('yearly')}>
+                {t('pro.subscribeYearly')}
+              </button>
+              {error && <div className="w-full text-xs text-rose-600 dark:text-rose-300">{error}</div>}
+            </>
           ) : (
             <>
-              <button className="btn" type="button" onClick={cancel}>
-                {t('pro.cancel')}
-              </button>
               <button
                 className="btn btn-primary"
                 type="button"
