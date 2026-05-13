@@ -98,7 +98,7 @@ function uid() {
 
 export const useAppStore = create<AppState & AppActions>()(
   persist<AppState & AppActions>(
-    (set, get) => ({
+    (set) => ({
       ...defaultState,
 
       setSettings: (patch) => set((s) => ({ settings: { ...s.settings, ...patch } })),
@@ -132,13 +132,6 @@ export const useAppStore = create<AppState & AppActions>()(
         })),
 
       addGoal: (goal) => {
-        const s = get()
-        // Limit only user-created goals (preset ones have nameKey)
-        const userCount = s.goals.filter((g) => !g.nameKey).length
-        if (!s.entitlements.isPro && userCount >= 3) {
-          set(() => ({ ui: { ...get().ui, proModalOpen: true, proModalReason: 'limit_goals' } }))
-          return false
-        }
         set((st) => ({ goals: [{ id: uid(), createdAt: Date.now(), ...goal }, ...st.goals] }))
         return true
       },
@@ -151,12 +144,6 @@ export const useAppStore = create<AppState & AppActions>()(
         })),
 
       addSavingsGoal: (goal) => {
-        const s = get()
-        const count = s.savingsGoals.length
-        if (!s.entitlements.isPro && count >= 3) {
-          set(() => ({ ui: { ...get().ui, proModalOpen: true, proModalReason: 'limit_savings' } }))
-          return false
-        }
         set((st) => ({ savingsGoals: [{ id: uid(), createdAt: Date.now(), ...goal }, ...st.savingsGoals] }))
         return true
       },

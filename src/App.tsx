@@ -5,8 +5,6 @@ import { SavingsPlanner } from './components/SavingsPlanner'
 import { TimerPanel } from './components/TimerPanel'
 import { useTranslation } from 'react-i18next'
 import { WidgetView } from './components/WidgetView'
-import { ProPaywall } from './components/ProPaywall'
-import { CloudSyncPanel } from './components/CloudSyncPanel'
 import { MobileTabs } from './components/MobileTabs'
 
 export default function App() {
@@ -23,7 +21,6 @@ export default function App() {
             {t('app.name')}
           </div>
         </div>
-        <ProPaywall />
       </div>
     )
   }
@@ -38,7 +35,6 @@ export default function App() {
             { key: 'home', labelKey: 'tabs.home', icon: '⏱', render: () => <><TimerPanel /><div className="mt-4"><Milestones /></div></> },
             { key: 'goals', labelKey: 'tabs.goals', icon: '🎯', render: () => <GoalWall /> },
             { key: 'savings', labelKey: 'tabs.savings', icon: '💰', render: () => <SavingsPlanner /> },
-            { key: 'cloud', labelKey: 'tabs.cloud', icon: '☁️', render: () => <CloudSyncPanel /> },
           ]}
         />
       </div>
@@ -57,16 +53,13 @@ export default function App() {
             <GoalWall />
           </div>
 
-          <aside className="flex flex-col gap-4 lg:sticky lg:top-6 h-fit">
-            <CloudSyncPanel />
-          </aside>
+          <aside className="flex flex-col gap-4 lg:sticky lg:top-6 h-fit" />
         </div>
 
         <footer className="py-4 text-center text-xs text-zinc-500 dark:text-zinc-400">
           {t('app.footer')}
         </footer>
       </div>
-      <ProPaywall />
     </div>
   )
 }

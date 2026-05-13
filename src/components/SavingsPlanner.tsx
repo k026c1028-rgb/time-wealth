@@ -15,7 +15,6 @@ export function SavingsPlanner() {
   const { t } = useTranslation()
   const currency = useAppStore((s) => s.settings.currency)
   const goals = useAppStore((s) => s.savingsGoals)
-  const isPro = useAppStore((s) => s.entitlements.isPro)
   const add = useAppStore((s) => s.addSavingsGoal)
   const update = useAppStore((s) => s.updateSavingsGoal)
   const remove = useAppStore((s) => s.removeSavingsGoal)
@@ -58,7 +57,7 @@ export function SavingsPlanner() {
       targetDate,
       cadence,
     })
-    if (!ok) return setFormError(t('pro.reasonSavingsLimit', { n: 3 }))
+    if (!ok) return setFormError(t('common.working'))
     resetForm()
     setOpen(false)
   }
@@ -69,11 +68,6 @@ export function SavingsPlanner() {
         <div>
           <h2 className="text-lg font-semibold tracking-tight">{t('savings.title')}</h2>
           <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">{t('savings.subtitle')}</p>
-          {!isPro && (
-            <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
-              {t('savings.limitNote', { used: goals.length, n: 3 })}
-            </p>
-          )}
         </div>
         {!open ? (
           <button className="btn btn-primary" type="button" onClick={() => setOpen(true)}>

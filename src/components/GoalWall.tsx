@@ -6,8 +6,6 @@ import { formatDateTime, formatDuration, formatMoney } from '../lib/format'
 import { useAppStore } from '../store/useAppStore'
 import type { Category } from '../types'
 import type { SupportedLang } from '../i18n/init'
-import { supportedLangs } from '../i18n/init'
-import { translateText } from '../lib/translateApi'
 
 const categories: Array<{ key: Category | 'All'; label: string }> = [
   { key: 'All', label: 'common.all' },
@@ -29,7 +27,6 @@ export function GoalWall() {
   const setSelectedCategory = useAppStore((s) => s.setSelectedCategory)
   const addGoal = useAppStore((s) => s.addGoal)
   const removeGoal = useAppStore((s) => s.removeGoal)
-  const updateGoalNameI18n = useAppStore((s) => s.updateGoalNameI18n)
 
   const [nowMs, setNowMs] = useState(() => Date.now())
   useEffect(() => {
@@ -92,13 +89,6 @@ export function GoalWall() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  {!g.nameKey && (
-                    <TranslationsPopover
-                      current={g.nameI18n ?? {}}
-                      fallbackName={g.name}
-                      onSave={(patch) => updateGoalNameI18n(g.id, patch)}
-                    />
-                  )}
                   <button className="btn" type="button" onClick={() => removeGoal(g.id)} title={t('common.remove')}>
                     {t('common.remove')}
                   </button>
@@ -162,37 +152,27 @@ function Stat({ label, value }: { label: string; value: string }) {
 function AddGoalInline({
   onAdd,
 }: {
-  onAdd: (goal: { name: string; price: number; category: Category; nameI18n?: Record<string, string> }) => boolean
+  onAdd: (goal: { name: string; price: number; category: Category }) => boolean
 }) {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [name, setName] = useState('')
   const [price, setPrice] = useState<number>(0)
   const [category, setCategory] = useState<Category>('Custom')
-  const [enableTranslations, setEnableTranslations] = useState(false)
-  const [nameI18n, setNameI18n] = useState<Record<string, string>>({})
-  const [autoLoading, setAutoLoading] = useState(false)
-  const [autoError, setAutoError] = useState<string | null>(null)
-  const isPro = useAppStore((s) => s.entitlements.isPro)
-  const openProModal = useAppStore((s) => s.openProModal)
 
   function submit() {
     const cleanName = name.trim()
     if (!cleanName) return
     if (!Number.isFinite(price) || price <= 0) return
-    const currentLang = (i18n.language || 'en') as SupportedLang
     const ok = onAdd({
       name: cleanName,
       price,
       category,
-      ...(enableTranslations ? { nameI18n: { ...nameI18n, [currentLang]: cleanName } } : {}),
     })
     if (!ok) return
     setName('')
     setPrice(0)
     setCategory('Custom')
-    setEnableTranslations(false)
-    setNameI18n({})
     setOpen(false)
   }
 
@@ -246,173 +226,6 @@ function AddGoalInline({
           {t('common.cancel')}
         </button>
       </div>
-
-      <div className="md:col-span-4">
-        <label className="mt-1 flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-300">
-          <input
-            type="checkbox"
-            checked={enableTranslations}
-            onChange={(e) => setEnableTranslations(e.target.checked)}
-          />
-          <span>{t('goals.translations')}</span>
-        </label>
-        {enableTranslations && (
-          <div className="mt-2 rounded-xl border border-zinc-200/60 bg-white/60 p-3 text-sm dark:border-zinc-800/60 dark:bg-zinc-950/20">
-            <div className="text-xs text-zinc-500 dark:text-zinc-400">{t('goals.translationsHint')}</div>
-            <div className="mt-2 flex flex-wrap items-center gap-2">
-              <button
-                className="btn"
-                type="button"
-                onClick={async () => {
-                  if (!isPro) {
-                    openProModal('pro_translate')
-                    return
-                  }
-                  try {
-                    setAutoError(null)
-                    setAutoLoading(true)
-                    const base = name.trim()
-                    if (!base) return
-                    const out: Record<string, string> = {}
-                    for (const l of supportedLangs) {
-                      out[l] = await translateText({ text: base, targetLang: l })
-                    }
-                    setNameI18n(out)
-                  } catch (e: any) {
-                    setAutoError(String(e?.message || e))
-                  } finally {
-                    setAutoLoading(false)
-                  }
-                }}
-                disabled={autoLoading}
-              >
-                {autoLoading ? t('common.translating') : t('common.autoTranslate')}
-              </button>
-              {autoError && <span className="text-xs text-rose-600 dark:text-rose-400">{t('common.translateFailed')}: {autoError}</span>}
-            </div>
-            <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-3">
-              {supportedLangs.map((l) => (
-                <div key={l}>
-                  <div className="label">{t('goals.goalNameInLang', { lang: l })}</div>
-                  <input
-                    className="input"
-                    value={nameI18n[l] ?? ''}
-                    onChange={(e) => setNameI18n((s) => ({ ...s, [l]: e.target.value }))}
-                    placeholder={l === (i18n.language || 'en') ? name : ''}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  )
-}
-
-function TranslationsPopover({
-  current,
-  fallbackName,
-  onSave,
-}: {
-  current: Partial<Record<string, string>>
-  fallbackName: string
-  onSave: (patch: Partial<Record<string, string>>) => void
-}) {
-  const { t, i18n } = useTranslation()
-  const [open, setOpen] = useState(false)
-  const [draft, setDraft] = useState<Record<string, string>>({})
-  const [autoLoading, setAutoLoading] = useState(false)
-  const [autoError, setAutoError] = useState<string | null>(null)
-  const isPro = useAppStore((s) => s.entitlements.isPro)
-  const openProModal = useAppStore((s) => s.openProModal)
-
-  useEffect(() => {
-    if (!open) return
-    const base: Record<string, string> = {}
-    for (const l of supportedLangs) base[l] = (current?.[l] ?? '') as string
-    setDraft(base)
-  }, [open, current])
-
-  return (
-    <div className="relative">
-      <button className="btn" type="button" onClick={() => setOpen((v) => !v)}>
-        {t('goals.translations')}
-      </button>
-      {open && (
-        <div className="absolute right-0 top-11 z-20 w-[320px] rounded-2xl border border-zinc-200 bg-white p-3 shadow-lg dark:border-zinc-800 dark:bg-zinc-950">
-          <div className="text-sm font-semibold">{t('goals.translations')}</div>
-          <div className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{t('goals.translationsHint')}</div>
-          <div className="mt-2 flex flex-wrap items-center gap-2">
-            <button
-              className="btn"
-              type="button"
-              onClick={async () => {
-                if (!isPro) {
-                  openProModal('pro_translate')
-                  return
-                }
-                try {
-                  setAutoError(null)
-                  setAutoLoading(true)
-                  const base = fallbackName.trim()
-                  const out: Record<string, string> = {}
-                  for (const l of supportedLangs) {
-                    out[l] = await translateText({ text: base, targetLang: l })
-                  }
-                  setDraft(out)
-                } catch (e: any) {
-                  setAutoError(String(e?.message || e))
-                } finally {
-                  setAutoLoading(false)
-                }
-              }}
-              disabled={autoLoading}
-            >
-              {autoLoading ? t('common.translating') : t('common.autoTranslate')}
-            </button>
-            {autoError && (
-              <div className="text-xs text-rose-600 dark:text-rose-400">
-                {t('common.translateFailed')}: {autoError}
-              </div>
-            )}
-          </div>
-          <div className="mt-3 max-h-[320px] space-y-2 overflow-auto pr-1">
-            {supportedLangs.map((l) => (
-              <div key={l}>
-                <div className="label">{t('goals.goalNameInLang', { lang: l })}</div>
-                <input
-                  className="input"
-                  value={draft[l] ?? ''}
-                  onChange={(e) => setDraft((s) => ({ ...s, [l]: e.target.value }))}
-                  placeholder={l === (i18n.language || 'en') ? fallbackName : ''}
-                />
-              </div>
-            ))}
-          </div>
-          <div className="mt-3 flex justify-end gap-2">
-            <button className="btn" type="button" onClick={() => setOpen(false)}>
-              {t('common.cancel')}
-            </button>
-            <button
-              className="btn btn-primary"
-              type="button"
-              onClick={() => {
-                // Keep only non-empty translations
-                const cleaned: Record<string, string> = {}
-                for (const [k, v] of Object.entries(draft)) {
-                  const val = (v ?? '').trim()
-                  if (val) cleaned[k] = val
-                }
-                onSave(cleaned)
-                setOpen(false)
-              }}
-            >
-              {t('common.save')}
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
