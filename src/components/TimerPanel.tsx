@@ -61,27 +61,29 @@ export function TimerPanel() {
                 <span>{t('app.microcalm')}</span>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            {/* 顶部操作区：横向排版（更适合横屏/桌面） */}
+            <div className="flex flex-wrap items-center justify-end gap-2">
               <LanguageSwitcher />
-              <button
-                className="btn"
-                type="button"
-                onClick={() => {
-                  return openWidget()
-                }}
-              >
+              <button className="btn" type="button" onClick={() => openWidget()}>
                 {t('common.widget')}
               </button>
               <SharePosterButton />
+
+              {/* 开始/暂停：优先醒目 */}
               {timer.isRunning ? (
-                <button className="btn" onClick={pause} type="button">
+                <button className="btn px-5 py-2 text-base font-semibold" onClick={pause} type="button">
                   {t('common.pause')}
                 </button>
               ) : (
-                <button className="btn btn-primary" onClick={start} type="button">
+                <button
+                  className="btn btn-primary px-6 py-2 text-base font-semibold shadow-md shadow-fuchsia-500/15"
+                  onClick={start}
+                  type="button"
+                >
                   {t('common.start')}
                 </button>
               )}
+
               <button className="btn" onClick={reset} type="button">
                 {t('common.reset')}
               </button>
