@@ -62,6 +62,12 @@
     "language": "Langue",
     "goalNameInLang": "Nom ({{lang}})"
   },
+  "tabs": {
+    "home": "Accueil",
+    "goals": "Objectifs",
+    "savings": "Épargne",
+    "cloud": "Cloud"
+  },
   "savings": {
     "title": "💰 Plan d’épargne",
     "subtitle": "Définissez un montant cible et une date limite. On calcule combien épargner par jour/semaine/mois.",

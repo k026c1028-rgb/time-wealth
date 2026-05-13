@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { WidgetView } from './components/WidgetView'
 import { ProPaywall } from './components/ProPaywall'
 import { CloudSyncPanel } from './components/CloudSyncPanel'
+import { MobileTabs } from './components/MobileTabs'
 
 export default function App() {
   const { t } = useTranslation()
@@ -30,7 +31,20 @@ export default function App() {
   return (
     <div className="relative min-h-dvh bg-gradient-to-b from-zinc-50 via-zinc-50 to-fuchsia-50 dark:from-zinc-950 dark:via-zinc-950 dark:to-fuchsia-950/10">
       <SoothingBackground />
-      <div className="relative mx-auto w-full max-w-6xl px-4 py-6 md:py-10">
+      {/* Mobile: bottom tabs + swipe */}
+      <div className="lg:hidden">
+        <MobileTabs
+          tabs={[
+            { key: 'home', labelKey: 'tabs.home', icon: '⏱', render: () => <><TimerPanel /><div className="mt-4"><Milestones /></div></> },
+            { key: 'goals', labelKey: 'tabs.goals', icon: '🎯', render: () => <GoalWall /> },
+            { key: 'savings', labelKey: 'tabs.savings', icon: '💰', render: () => <SavingsPlanner /> },
+            { key: 'cloud', labelKey: 'tabs.cloud', icon: '☁️', render: () => <CloudSyncPanel /> },
+          ]}
+        />
+      </div>
+
+      {/* Desktop: dashboard layout */}
+      <div className="relative mx-auto hidden w-full max-w-6xl px-4 py-6 md:py-10 lg:block">
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_360px]">
           <div className="flex flex-col gap-4">
             <TimerPanel />

@@ -62,6 +62,12 @@
     "language": "Language",
     "goalNameInLang": "Name ({{lang}})"
   },
+  "tabs": {
+    "home": "Home",
+    "goals": "Goals",
+    "savings": "Savings",
+    "cloud": "Cloud"
+  },
   "savings": {
     "title": "💰 Savings Plan",
     "subtitle": "Set a target amount and a deadline. We’ll calculate how much to save per day/week/month.",

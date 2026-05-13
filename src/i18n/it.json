@@ -62,6 +62,12 @@
     "language": "Lingua",
     "goalNameInLang": "Nome ({{lang}})"
   },
+  "tabs": {
+    "home": "Home",
+    "goals": "Obiettivi",
+    "savings": "Risparmi",
+    "cloud": "Cloud"
+  },
   "savings": {
     "title": "💰 Piano di risparmio",
     "subtitle": "Imposta un importo obiettivo e una scadenza. Calcoliamo quanto risparmiare al giorno/settimana/mese.",

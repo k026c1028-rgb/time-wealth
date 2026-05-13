@@ -62,6 +62,12 @@
     "language": "Idioma",
     "goalNameInLang": "Nome ({{lang}})"
   },
+  "tabs": {
+    "home": "Início",
+    "goals": "Metas",
+    "savings": "Poupança",
+    "cloud": "Nuvem"
+  },
   "savings": {
     "title": "💰 Plano de poupança",
     "subtitle": "Defina um valor-alvo e uma data. Calculamos quanto poupar por dia/semana/mês.",

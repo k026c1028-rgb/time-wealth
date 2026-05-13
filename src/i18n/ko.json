@@ -62,6 +62,12 @@
     "language": "언어",
     "goalNameInLang": "이름 ({{lang}})"
   },
+  "tabs": {
+    "home": "홈",
+    "goals": "목표",
+    "savings": "저축",
+    "cloud": "클라우드"
+  },
   "savings": {
     "title": "💰 저축 플랜",
     "subtitle": "목표 금액과 마감일을 설정하면 하루/주/월 얼마나 모아야 하는지 계산해요.",

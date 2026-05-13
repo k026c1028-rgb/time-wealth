@@ -62,6 +62,12 @@
     "language": "Sprache",
     "goalNameInLang": "Name ({{lang}})"
   },
+  "tabs": {
+    "home": "Start",
+    "goals": "Ziele",
+    "savings": "Sparen",
+    "cloud": "Cloud"
+  },
   "savings": {
     "title": "💰 Sparplan",
     "subtitle": "Zielbetrag und Deadline festlegen – wir berechnen, wie viel du pro Tag/Woche/Monat sparen solltest.",

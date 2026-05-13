@@ -62,6 +62,12 @@
     "language": "Idioma",
     "goalNameInLang": "Nombre ({{lang}})"
   },
+  "tabs": {
+    "home": "Inicio",
+    "goals": "Metas",
+    "savings": "Ahorro",
+    "cloud": "Nube"
+  },
   "savings": {
     "title": "💰 Plan de ahorro",
     "subtitle": "Define un monto objetivo y una fecha límite. Calculamos cuánto ahorrar por día/semana/mes.",

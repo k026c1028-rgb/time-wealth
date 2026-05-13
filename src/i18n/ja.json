@@ -62,6 +62,12 @@
     "language": "言語",
     "goalNameInLang": "名前（{{lang}}）"
   },
+  "tabs": {
+    "home": "ホーム",
+    "goals": "目標",
+    "savings": "貯金",
+    "cloud": "クラウド"
+  },
   "savings": {
     "title": "💰 貯金プラン",
     "subtitle": "目標金額と期限を設定すると、毎日/毎週/毎月いくら貯めるべきか計算します。",
