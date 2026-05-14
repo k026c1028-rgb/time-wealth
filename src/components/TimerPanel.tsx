@@ -31,6 +31,24 @@ export function TimerPanel() {
   const pause = useAppStore((s) => s.pause)
   const reset = useAppStore((s) => s.reset)
 
+  // Feedback: direct users to GitHub Issues (public)
+  const feedbackUrl =
+    'https://github.com/k026c1028-rgb/time-wealth/issues/new?labels=feedback&title=' +
+    encodeURIComponent('Feedback: ') +
+    '&body=' +
+    encodeURIComponent(
+      [
+        '# 问题 / 建议',
+        '',
+        '（请尽量描述：你想要什么、现在遇到什么、最好附截图）',
+        '',
+        '# 你期望的改进',
+        '',
+        '# 你使用的设备/浏览器',
+        '',
+      ].join('\n'),
+    )
+
   const [nowMs, setNowMs] = useState(() => Date.now())
 
   useEffect(() => {
@@ -68,6 +86,15 @@ export function TimerPanel() {
                 {t('common.widget')}
               </button>
               <SharePosterButton />
+              <a
+                className="btn"
+                href={feedbackUrl}
+                target="_blank"
+                rel="noreferrer"
+                title={t('common.feedback', { defaultValue: '反馈' })}
+              >
+                {t('common.feedback', { defaultValue: '反馈' })}
+              </a>
 
               {/* 开始/暂停：优先醒目 */}
               {timer.isRunning ? (

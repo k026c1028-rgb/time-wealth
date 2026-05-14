@@ -58,6 +58,16 @@ export default function App() {
 
         <footer className="py-4 text-center text-xs text-zinc-500 dark:text-zinc-400">
           {t('app.footer')}
+          <div className="mt-2">
+            <a
+              className="underline underline-offset-4 hover:text-zinc-700 dark:hover:text-zinc-200"
+              href="https://github.com/k026c1028-rgb/time-wealth/issues/new?labels=feedback"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {t('common.feedback', { defaultValue: '反馈/建议' })}
+            </a>
+          </div>
         </footer>
       </div>
     </div>

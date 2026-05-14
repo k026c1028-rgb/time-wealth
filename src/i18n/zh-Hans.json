@@ -22,6 +22,8 @@
     "all": "全部",
     "done": "已完成",
     "completed": "已完成"
+    ,
+    "feedback": "反馈/建议"
   },
   "settings": {
     "currency": "货币",
@@ -115,7 +117,7 @@
     "pro": "PRO",
     "button": "升级Pro",
     "title": "Pro 会员",
-    "price": "每月 490 日元（¥490/月）",
+    "price": "按所选币种计费（支持 USD / JPY / CNY）",
     "includes": "Pro 解锁内容",
     "featureUnlimited": "目标/存钱目标：免费最多各 3 个，Pro 不限数量",
     "featureWidget": "高级桌面小组件（置顶小窗等）",

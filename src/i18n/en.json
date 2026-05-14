@@ -22,6 +22,8 @@
     "all": "All",
     "done": "Done",
     "completed": "Completed"
+    ,
+    "feedback": "Feedback"
   },
   "settings": {
     "currency": "Currency",
@@ -115,7 +117,7 @@
     "pro": "PRO",
     "button": "Go Pro",
     "title": "Pro membership",
-    "price": "¥490 / month (JPY)",
+    "price": "Billed in selected currency (USD / JPY / CNY)",
     "includes": "What you get",
     "featureUnlimited": "Unlimited goals & savings goals (free: 3 each)",
     "featureWidget": "Advanced desktop widget (always-on-top window, etc.)",
