@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { calcEarned, calcHourlyRate, calcPerSecond } from '../lib/calc'
@@ -30,6 +30,24 @@ export function TimerPanel() {
   const start = useAppStore((s) => s.start)
   const pause = useAppStore((s) => s.pause)
   const reset = useAppStore((s) => s.reset)
+
+  // Allow users to clear number inputs while editing (avoid auto-coercing '' -> 0).
+  const annualSalaryEditing = useRef(false)
+  const workDaysEditing = useRef(false)
+  const hoursEditing = useRef(false)
+  const [annualSalaryInput, setAnnualSalaryInput] = useState(() => String(settings.annualSalary))
+  const [workDaysInput, setWorkDaysInput] = useState(() => String(settings.workDaysPerYear))
+  const [hoursPerDayInput, setHoursPerDayInput] = useState(() => String(settings.hoursPerDay))
+
+  useEffect(() => {
+    if (!annualSalaryEditing.current) setAnnualSalaryInput(String(settings.annualSalary))
+  }, [settings.annualSalary])
+  useEffect(() => {
+    if (!workDaysEditing.current) setWorkDaysInput(String(settings.workDaysPerYear))
+  }, [settings.workDaysPerYear])
+  useEffect(() => {
+    if (!hoursEditing.current) setHoursPerDayInput(String(settings.hoursPerDay))
+  }, [settings.hoursPerDay])
 
   // Feedback: direct users to GitHub Issues (public)
   const feedbackUrl =
@@ -161,8 +179,22 @@ export function TimerPanel() {
                 className="input"
                 type="number"
                 inputMode="decimal"
-                value={settings.annualSalary}
-                onChange={(e) => setSettings({ annualSalary: Number(e.target.value) })}
+                value={annualSalaryInput}
+                onFocus={() => (annualSalaryEditing.current = true)}
+                onBlur={() => {
+                  annualSalaryEditing.current = false
+                  const v = annualSalaryInput.trim()
+                  if (!v) return setAnnualSalaryInput(String(settings.annualSalary))
+                  const n = Number(v)
+                  if (Number.isFinite(n)) setSettings({ annualSalary: Math.max(0, n) })
+                }}
+                onChange={(e) => {
+                  const v = e.target.value
+                  setAnnualSalaryInput(v)
+                  if (v === '') return
+                  const n = Number(v)
+                  if (Number.isFinite(n)) setSettings({ annualSalary: Math.max(0, n) })
+                }}
                 min={0}
               />
             </div>
@@ -173,8 +205,22 @@ export function TimerPanel() {
                 className="input"
                 type="number"
                 inputMode="numeric"
-                value={settings.workDaysPerYear}
-                onChange={(e) => setSettings({ workDaysPerYear: Number(e.target.value) })}
+                value={workDaysInput}
+                onFocus={() => (workDaysEditing.current = true)}
+                onBlur={() => {
+                  workDaysEditing.current = false
+                  const v = workDaysInput.trim()
+                  if (!v) return setWorkDaysInput(String(settings.workDaysPerYear))
+                  const n = Number(v)
+                  if (Number.isFinite(n)) setSettings({ workDaysPerYear: Math.max(1, Math.round(n)) })
+                }}
+                onChange={(e) => {
+                  const v = e.target.value
+                  setWorkDaysInput(v)
+                  if (v === '') return
+                  const n = Number(v)
+                  if (Number.isFinite(n)) setSettings({ workDaysPerYear: Math.max(1, Math.round(n)) })
+                }}
                 min={1}
               />
             </div>
@@ -185,8 +231,22 @@ export function TimerPanel() {
                 className="input"
                 type="number"
                 inputMode="decimal"
-                value={settings.hoursPerDay}
-                onChange={(e) => setSettings({ hoursPerDay: Number(e.target.value) })}
+                value={hoursPerDayInput}
+                onFocus={() => (hoursEditing.current = true)}
+                onBlur={() => {
+                  hoursEditing.current = false
+                  const v = hoursPerDayInput.trim()
+                  if (!v) return setHoursPerDayInput(String(settings.hoursPerDay))
+                  const n = Number(v)
+                  if (Number.isFinite(n)) setSettings({ hoursPerDay: Math.max(0.5, n) })
+                }}
+                onChange={(e) => {
+                  const v = e.target.value
+                  setHoursPerDayInput(v)
+                  if (v === '') return
+                  const n = Number(v)
+                  if (Number.isFinite(n)) setSettings({ hoursPerDay: Math.max(0.5, n) })
+                }}
                 min={0.5}
                 step={0.5}
               />
