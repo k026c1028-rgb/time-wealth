@@ -32,7 +32,22 @@ export default function App() {
       <div className="lg:hidden">
         <MobileTabs
           tabs={[
-            { key: 'home', labelKey: 'tabs.home', icon: '⏱', render: () => <><TimerPanel /><div className="mt-4"><Milestones /></div></> },
+            {
+              key: 'home',
+              labelKey: 'tabs.home',
+              icon: '⏱',
+              render: () => (
+                <>
+                  <TimerPanel />
+                  <div className="mt-4">
+                    <SavingsPlanner />
+                  </div>
+                  <div className="mt-4">
+                    <Milestones />
+                  </div>
+                </>
+              ),
+            },
             { key: 'goals', labelKey: 'tabs.goals', icon: '🎯', render: () => <GoalWall /> },
             { key: 'savings', labelKey: 'tabs.savings', icon: '💰', render: () => <SavingsPlanner /> },
           ]}
