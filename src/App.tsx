@@ -49,7 +49,6 @@ export default function App() {
               ),
             },
             { key: 'goals', labelKey: 'tabs.goals', icon: '🎯', render: () => <GoalWall /> },
-            { key: 'savings', labelKey: 'tabs.savings', icon: '💰', render: () => <SavingsPlanner /> },
           ]}
         />
       </div>
