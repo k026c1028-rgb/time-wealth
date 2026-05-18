@@ -92,7 +92,7 @@ export function TimerPanel() {
 
   return (
     <section className="card">
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div className="flex-1">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -101,13 +101,6 @@ export function TimerPanel() {
                   {t('app.name')}
                 </span>
               </h1>
-              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
-                {t('app.tagline')}
-              </p>
-              <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-zinc-200/70 bg-white/60 px-3 py-1 text-xs text-zinc-600 shadow-sm dark:border-zinc-800/70 dark:bg-zinc-950/30 dark:text-zinc-300">
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/80 animate-breathe" />
-                <span>{t('app.microcalm')}</span>
-              </div>
             </div>
             {/* 顶部操作区：横向排版（更适合横屏/桌面） */}
             <div className="flex flex-wrap items-center justify-end gap-2">
@@ -147,7 +140,7 @@ export function TimerPanel() {
             </div>
           </div>
 
-          <div className="mt-4 rounded-2xl border border-zinc-200/70 bg-gradient-to-br from-white to-fuchsia-50 p-4 dark:border-zinc-800/70 dark:from-zinc-950 dark:to-fuchsia-950/20">
+          <div className="mt-3 rounded-2xl border border-zinc-200/70 bg-gradient-to-br from-white to-fuchsia-50 p-4 dark:border-zinc-800/70 dark:from-zinc-950 dark:to-fuchsia-950/20">
             <div className="flex items-center justify-between gap-3">
               <div className="text-xs font-medium text-zinc-600 dark:text-zinc-300">
                 {t('earned.title')}
