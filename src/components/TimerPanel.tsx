@@ -39,6 +39,18 @@ export function TimerPanel() {
   const [workDaysInput, setWorkDaysInput] = useState(() => String(settings.workDaysPerYear))
   const [hoursPerDayInput, setHoursPerDayInput] = useState(() => String(settings.hoursPerDay))
 
+  // iOS WeChat/QQ webview sometimes gets "stuck" in a zoomed/offset state after keyboard hides.
+  // This small nudge helps the viewport recover.
+  const ua = typeof navigator !== 'undefined' ? navigator.userAgent : ''
+  const isIOS = /iPhone|iPad|iPod/i.test(ua)
+  const isWeChatOrQQ = /MicroMessenger|QQ\//i.test(ua)
+  const fixViewportAfterInput = () => {
+    if (!isIOS || !isWeChatOrQQ) return
+    window.setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+    }, 50)
+  }
+
   useEffect(() => {
     if (!annualSalaryEditing.current) setAnnualSalaryInput(String(settings.annualSalary))
   }, [settings.annualSalary])
@@ -184,9 +196,13 @@ export function TimerPanel() {
                 onBlur={() => {
                   annualSalaryEditing.current = false
                   const v = annualSalaryInput.trim()
-                  if (!v) return setAnnualSalaryInput(String(settings.annualSalary))
+                  if (!v) {
+                    setAnnualSalaryInput(String(settings.annualSalary))
+                    return fixViewportAfterInput()
+                  }
                   const n = Number(v)
                   if (Number.isFinite(n)) setSettings({ annualSalary: Math.max(0, n) })
+                  fixViewportAfterInput()
                 }}
                 onChange={(e) => {
                   const v = e.target.value
@@ -210,9 +226,13 @@ export function TimerPanel() {
                 onBlur={() => {
                   workDaysEditing.current = false
                   const v = workDaysInput.trim()
-                  if (!v) return setWorkDaysInput(String(settings.workDaysPerYear))
+                  if (!v) {
+                    setWorkDaysInput(String(settings.workDaysPerYear))
+                    return fixViewportAfterInput()
+                  }
                   const n = Number(v)
                   if (Number.isFinite(n)) setSettings({ workDaysPerYear: Math.max(1, Math.round(n)) })
+                  fixViewportAfterInput()
                 }}
                 onChange={(e) => {
                   const v = e.target.value
@@ -236,9 +256,13 @@ export function TimerPanel() {
                 onBlur={() => {
                   hoursEditing.current = false
                   const v = hoursPerDayInput.trim()
-                  if (!v) return setHoursPerDayInput(String(settings.hoursPerDay))
+                  if (!v) {
+                    setHoursPerDayInput(String(settings.hoursPerDay))
+                    return fixViewportAfterInput()
+                  }
                   const n = Number(v)
                   if (Number.isFinite(n)) setSettings({ hoursPerDay: Math.max(0.5, n) })
+                  fixViewportAfterInput()
                 }}
                 onChange={(e) => {
                   const v = e.target.value
