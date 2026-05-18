@@ -50,6 +50,14 @@
     @apply dark:border-zinc-800 dark:bg-zinc-900 dark:focus:ring-fuchsia-700;
   }
 
+  /* iOS Safari: prevent auto-zoom on focus by ensuring font-size >= 16px on touch devices.
+     Also helps keep pinch-to-zoom behavior normal (no "stuck" zoom after editing). */
+  @media (hover: none) and (pointer: coarse) {
+    .input {
+      @apply text-base;
+    }
+  }
+
   .label {
     @apply text-xs font-medium text-zinc-600 dark:text-zinc-300;
   }
