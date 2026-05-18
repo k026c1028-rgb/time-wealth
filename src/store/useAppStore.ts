@@ -124,7 +124,8 @@ export const useAppStore = create<AppState & AppActions>()(
 
       reset: () =>
         set((s) => ({
-          timer: { isRunning: true, startedAtMs: Date.now(), elapsedMs: 0 },
+          // Reset should NOT auto-start. Keep it paused after reset.
+          timer: { isRunning: false, startedAtMs: null, elapsedMs: 0 },
           // Keep settings/goals; reset is about the timer session.
           settings: s.settings,
           goals: s.goals,
